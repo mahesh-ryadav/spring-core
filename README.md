@@ -4,15 +4,18 @@ This project demonstrates the concepts of tight coupling and loose coupling in J
 
 ## Table of Contents
 
-- [Tight Coupling](#tight-coupling)
-- [Loose Coupling](#loose-coupling)
-- [Comparison](#comparison)
+- [Coupling](#coupling)
+  - [What is Coupling?](#what-is-coupling)
+  - [Tight Coupling](#tight-coupling)
+  - [Loose Coupling](#loose-coupling)
+  - [Comparison](#comparison)
+  - [Interview Questions on Coupling](#interview-questions-on-coupling)
+  - [How to Run](#how-to-run)
 - [Inversion of Control (IoC)](#inversion-of-control-ioc)
   - [What is IoC?](#what-is-ioc)
   - [Annotation-based Configuration](#annotation-based-configuration)
   - [Java-based Configuration](#java-based-configuration)
   - [Interview Questions on IoC and Configuration](#interview-questions-on-ioc-and-configuration)
-- [How to Run](#how-to-run)
 
 ## Tight Coupling
 
