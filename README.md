@@ -7,6 +7,11 @@ This project demonstrates the concepts of tight coupling and loose coupling in J
 - [Tight Coupling](#tight-coupling)
 - [Loose Coupling](#loose-coupling)
 - [Comparison](#comparison)
+- [Inversion of Control (IoC)](#inversion-of-control-ioc)
+  - [What is IoC?](#what-is-ioc)
+  - [Annotation-based Configuration](#annotation-based-configuration)
+  - [Java-based Configuration](#java-based-configuration)
+  - [Interview Questions on IoC and Configuration](#interview-questions-on-ioc-and-configuration)
 - [How to Run](#how-to-run)
 
 ## Tight Coupling
@@ -235,6 +240,420 @@ The `Client` class demonstrates how to use this design. It creates different veh
 4. **Extending Functionality**:
    - Tight: Modify `Traveller` to add new vehicles
    - Loose: Just create new classes implementing `Vehicle`
+
+## Inversion of Control (IoC)
+
+### What is IoC?
+
+Inversion of Control (IoC) is a design principle in software engineering where the control of object creation and dependency management is inverted from the application code to an external container or framework. Instead of classes creating their own dependencies, an IoC container manages the lifecycle and injection of dependencies.
+
+IoC is implemented through Dependency Injection (DI), where dependencies are "injected" into classes rather than being created internally. This promotes loose coupling, better testability, and more maintainable code.
+
+In Spring Framework, IoC is achieved through:
+- **Annotation-based Configuration**: Using annotations like `@Component`, `@Autowired`, `@Qualifier`
+- **Java-based Configuration**: Using `@Configuration` and `@Bean` annotations
+- **XML-based Configuration**: Using XML configuration files (less common in modern Spring)
+
+### Annotation-based Configuration
+
+Annotation-based configuration uses Spring's stereotype annotations to automatically detect and wire beans. The IoC container scans for annotated classes and manages their dependencies.
+
+#### Code Example
+
+**AppConfig.java**
+```java
+package com.mahesh.ioc.annotationbasedcofiguration;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+@ComponentScan(basePackages = "com.mahesh.ioc.annotationbasedcofiguration")
+public class AppConfig {
+}
+```
+
+**Vehicle.java**
+```java
+package com.mahesh.ioc.annotationbasedcofiguration;
+
+public interface Vehicle {
+    void move();
+}
+```
+
+**Bike.java**
+```java
+package com.mahesh.ioc.annotationbasedcofiguration;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
+public class Bike implements Vehicle {
+    @java.lang.Override
+    @Autowired
+    public void move() {
+        System.out.println("Bike is moving");
+    }
+}
+```
+
+**Car.java**
+```java
+package com.mahesh.ioc.annotationbasedcofiguration;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
+public class Car implements Vehicle {
+
+    @java.lang.Override
+    @Autowired
+    public void move() {
+        System.out.println("Car is moving");
+    }
+}
+```
+
+**Cycle.java**
+```java
+package com.mahesh.ioc.annotationbasedcofiguration;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
+public class Cycle implements Vehicle {
+
+    @java.lang.Override
+    @Autowired
+    public void move() {
+        System.out.println("Cycle is moving");
+    }
+}
+```
+
+**Traveller.java**
+```java
+package com.mahesh.ioc.annotationbasedcofiguration;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+
+@Component
+public class Traveller {
+    Vehicle vehicle = null;
+    @Autowired
+    public Traveller(@Qualifier("car") Vehicle vehicle) {
+        this.vehicle = vehicle;
+    }
+
+    public void startJourney(){
+        this.vehicle.move();
+    }
+}
+```
+
+**Client.java**
+```java
+package com.mahesh.ioc.annotationbasedcofiguration;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+public class Client {
+
+    static void main() {
+
+//        Vehicle vehicle = new Car();
+//        Vehicle bike = new Bike();
+//        Traveller traveller = new Traveller(vehicle);
+//        Traveller traveller = new Traveller(bike);
+//        traveller.startJourney();
+
+        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(AppConfig.class);
+        Car car = applicationContext.getBean(Car.class);
+        car.move();
+
+        Bike bike = applicationContext.getBean(Bike.class);
+        bike.move();
+
+        Cycle cycle = applicationContext.getBean(Cycle.class);
+        cycle.move();
+
+        Traveller traveller = applicationContext.getBean(Traveller.class);
+        traveller.startJourney();
+    }
+}
+```
+
+#### Explanation
+
+In annotation-based configuration:
+- `@Configuration` marks the class as a source of bean definitions
+- `@ComponentScan` tells Spring to scan for components in the specified package
+- `@Component` marks classes as Spring-managed beans
+- `@Autowired` injects dependencies automatically
+- `@Qualifier` specifies which bean to inject when multiple implementations exist
+
+The Spring IoC container automatically creates and wires all the beans based on the annotations.
+
+### Java-based Configuration
+
+Java-based configuration uses `@Configuration` and `@Bean` annotations to explicitly define beans in Java code, providing more control over bean creation.
+
+#### Code Example
+
+**AppConfig.java**
+```java
+package com.mahesh.ioc.javabasedconfiguration;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class AppConfig {
+
+    @Bean
+    public Vehicle car(){
+        return new Car();
+    }
+
+    @Bean
+    public Vehicle bike(){
+        return new Bike();
+    }
+
+    @Bean
+    public Vehicle cycle(){
+        return new Cycle();
+    }
+
+    @Bean
+    public Traveller traveller(){
+        return new Traveller(bike());
+    }
+
+}
+```
+
+**Vehicle.java**
+```java
+package com.mahesh.ioc.javabasedconfiguration;
+
+public interface Vehicle {
+    void move();
+}
+```
+
+**Bike.java**
+```java
+package com.mahesh.ioc.javabasedconfiguration;
+
+public class Bike implements Vehicle {
+    @java.lang.Override
+    public void move() {
+        System.out.println("Bike is moving");
+    }
+}
+```
+
+**Car.java**
+```java
+package com.mahesh.ioc.javabasedconfiguration;
+
+public class Car implements Vehicle {
+
+    @java.lang.Override
+    public void move() {
+        System.out.println("Car is moving");
+    }
+}
+```
+
+**Cycle.java**
+```java
+package com.mahesh.ioc.javabasedconfiguration;
+
+public class Cycle implements Vehicle {
+
+    @java.lang.Override
+    public void move() {
+        System.out.println("Cycle is moving");
+    }
+}
+```
+
+**Traveller.java**
+```java
+package com.mahesh.ioc.javabasedconfiguration;
+
+public class Traveller {
+    Vehicle vehicle = null;
+    public Traveller(Vehicle vehicle) {
+        this.vehicle = vehicle;
+    }
+
+    public void startJourney(){
+        this.vehicle.move();
+    }
+}
+```
+
+**Client.java**
+```java
+package com.mahesh.ioc.javabasedconfiguration;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+public class Client {
+
+    static void main() {
+
+//        Vehicle vehicle = new Car();
+//        Vehicle bike = new Bike();
+//        Traveller traveller = new Traveller(vehicle);
+//        Traveller traveller = new Traveller(bike);
+//        traveller.startJourney();
+
+        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(AppConfig.class);
+        Car car = applicationContext.getBean(Car.class);
+        car.move();
+
+        Bike bike = applicationContext.getBean(Bike.class);
+        bike.move();
+
+        Cycle cycle = applicationContext.getBean(Cycle.class);
+        cycle.move();
+
+        Traveller traveller = applicationContext.getBean(Traveller.class);
+        traveller.startJourney();
+    }
+}
+```
+
+#### Explanation
+
+In Java-based configuration:
+- `@Configuration` marks the class as a configuration class
+- `@Bean` methods define Spring beans explicitly
+- The configuration class has full control over how beans are created and wired
+- Dependencies are injected by calling other `@Bean` methods within the same configuration class
+
+### Interview Questions on IoC and Configuration
+
+Here are some common interview questions related to Inversion of Control and Spring configuration:
+
+#### 1. What is Inversion of Control (IoC)?
+
+**Answer:** Inversion of Control is a design principle where the control of object creation and dependency management is inverted from the application code to an external container. Instead of classes creating their own dependencies, an IoC container manages the lifecycle and injection of dependencies. This promotes loose coupling, better testability, and maintainable code.
+
+#### 2. What is the difference between IoC and Dependency Injection?
+
+**Answer:** IoC is a broader principle, while Dependency Injection (DI) is a specific implementation of IoC. DI is the technique where dependencies are injected into classes rather than being created internally. IoC containers use DI to manage object lifecycles and wiring.
+
+#### 3. Explain the different types of dependency injection in Spring.
+
+**Answer:** Spring supports three types of dependency injection:
+- **Constructor Injection**: Dependencies are injected through constructor parameters
+- **Setter Injection**: Dependencies are injected through setter methods
+- **Field Injection**: Dependencies are injected directly into fields using @Autowired
+
+Constructor injection is generally preferred as it ensures dependencies are set at object creation time.
+
+#### 4. What is the difference between @Component, @Service, @Repository, and @Controller?
+
+**Answer:** These are all stereotype annotations that mark classes as Spring-managed beans:
+- `@Component`: Generic stereotype for any Spring-managed component
+- `@Service`: Indicates a service layer component (business logic)
+- `@Repository`: Indicates a data access component (DAO layer)
+- `@Controller`: Indicates a web controller component
+
+All of these are scanned by `@ComponentScan` and are essentially `@Component` with additional semantic meaning.
+
+#### 5. Explain @Autowired annotation.
+
+**Answer:** `@Autowired` is used to automatically inject dependencies. It can be used on:
+- Constructor
+- Setter method
+- Field
+
+Spring's IoC container resolves and injects the matching bean. If multiple beans of the same type exist, `@Qualifier` can be used to specify which bean to inject.
+
+#### 6. What is @Qualifier annotation used for?
+
+**Answer:** `@Qualifier` is used to resolve ambiguity when multiple beans of the same type exist in the Spring context. It allows you to specify exactly which bean should be injected by providing a qualifier name that matches the bean name or a custom qualifier.
+
+#### 7. Explain the difference between @Bean and @Component.
+
+**Answer:**
+- `@Component` is used with annotation-based configuration and is scanned automatically
+- `@Bean` is used with Java-based configuration and explicitly defines a bean in a `@Configuration` class
+- `@Component` is applied to classes, while `@Bean` is applied to methods
+- `@Bean` gives more control over bean creation and initialization
+
+#### 8. What is @Configuration annotation?
+
+**Answer:** `@Configuration` indicates that a class declares one or more `@Bean` methods and may be processed by the Spring container to generate bean definitions and service requests for those beans at runtime.
+
+#### 9. Explain @ComponentScan.
+
+**Answer:** `@ComponentScan` tells Spring where to look for annotated components. It scans the specified packages and their sub-packages for classes annotated with `@Component`, `@Service`, `@Repository`, `@Controller`, etc., and registers them as Spring beans.
+
+#### 10. What are the advantages of IoC?
+
+**Answer:** IoC provides several advantages:
+- **Loose Coupling**: Classes don't create their own dependencies
+- **Testability**: Easy to inject mock dependencies for testing
+- **Maintainability**: Changes to dependencies don't affect dependent classes
+- **Flexibility**: Easy to swap implementations
+- **Centralized Configuration**: All bean configurations are managed in one place
+
+#### 11. How does Spring IoC container work?
+
+**Answer:** The Spring IoC container:
+1. Reads configuration metadata (annotations, XML, or Java config)
+2. Creates and manages bean instances
+3. Wires dependencies between beans
+4. Manages the complete lifecycle of beans (creation, initialization, destruction)
+5. Provides services like dependency injection, AOP, etc.
+
+#### 12. What is the difference between BeanFactory and ApplicationContext?
+
+**Answer:**
+- **BeanFactory**: Basic IoC container that provides basic dependency injection
+- **ApplicationContext**: Advanced container that extends BeanFactory with additional features like:
+  - Internationalization support
+  - Event propagation
+  - Resource loading
+  - Automatic registration of BeanPostProcessor and BeanFactoryPostProcessor
+
+ApplicationContext is preferred for most applications.
+
+#### 13. Explain bean scopes in Spring.
+
+**Answer:** Spring supports several bean scopes:
+- **Singleton**: One instance per Spring container (default)
+- **Prototype**: New instance each time the bean is requested
+- **Request**: One instance per HTTP request (web applications)
+- **Session**: One instance per HTTP session (web applications)
+- **Global Session**: One instance per global HTTP session (portlets)
+
+#### 14. What is @Scope annotation?
+
+**Answer:** `@Scope` is used to define the scope of a Spring bean. It can be applied to classes (with `@Component`) or methods (with `@Bean`). Common values are "singleton", "prototype", "request", "session".
+
+#### 15. How do you handle circular dependencies in Spring?
+
+**Answer:** Spring can handle circular dependencies through setter injection, but not with constructor injection. For constructor injection, circular dependencies will cause a BeanCurrentlyInCreationException. Solutions include:
+- Use setter injection instead of constructor injection
+- Refactor the code to avoid circular dependencies
+- Use @Lazy annotation to break the cycle
 
 ## How to Run
 
