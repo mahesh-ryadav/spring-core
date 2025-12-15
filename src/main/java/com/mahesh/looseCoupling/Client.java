@@ -4,7 +4,7 @@ public class Client {
 
 
     static void main() {
-        Vehicle vehicle = new Car();
+        // Vehicle vehicle = new Car();
         Vehicle bike = new Bike();
 
 

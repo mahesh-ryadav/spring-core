@@ -1,7 +1,6 @@
-package com.mahesh.looseCoupling;
+package com.mahesh.ioc.javabasedconfiguration;
 
-public class Cycle implements Vehicle{
-
+public class Cycle implements Vehicle {
 
     @java.lang.Override
     public void move() {
