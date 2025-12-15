@@ -244,6 +244,169 @@ The `Client` class demonstrates how to use this design. It creates different veh
    - Tight: Modify `Traveller` to add new vehicles
    - Loose: Just create new classes implementing `Vehicle`
 
+## How to Run
+
+1. Compile the Java files:
+   ```
+   javac -d . src/main/java/com/mahesh/tightCoupling/*.java
+   javac -d . src/main/java/com/mahesh/looseCoupling/*.java
+   ```
+
+2. Run the tight coupling example:
+   ```
+   java com.mahesh.tightCoupling.Client
+   ```
+
+3. Run the loose coupling example:
+   ```
+   java com.mahesh.looseCoupling.Client
+   ```
+
+Note: The loose coupling `Client.java` has a `main()` method without proper signature. To run it, you may need to add `public static void main(String[] args)` or call it from another class.
+
+## Interview Questions on Coupling
+
+Here are some common interview questions related to coupling in software design, along with detailed answers:
+
+### 1. What is coupling in software design?
+
+**Answer:** Coupling refers to the degree of interdependence between software modules or classes. It measures how closely connected different parts of a system are. High coupling means modules are tightly connected and changes in one module can significantly affect others. Low coupling means modules are relatively independent, making the system more maintainable and flexible.
+
+### 2. Explain the difference between tight coupling and loose coupling.
+
+**Answer:** Tight coupling occurs when classes are highly dependent on each other, often through direct instantiation or concrete references. For example, if Class A directly creates an instance of Class B, they are tightly coupled.
+
+Loose coupling is achieved when classes depend on abstractions (like interfaces) rather than concrete implementations. This allows for greater flexibility and easier changes. In the examples above, the tight coupling version has `Traveller` directly instantiating `Bike`, while the loose coupling version uses a `Vehicle` interface and dependency injection.
+
+### 3. What are the disadvantages of tight coupling?
+
+**Answer:** Tight coupling has several disadvantages:
+- **Rigidity**: Hard to modify or extend code without affecting other parts
+- **Difficulty in Testing**: Classes can't be tested in isolation
+- **Poor Maintainability**: Changes in one class can break dependent classes
+- **Limited Reusability**: Tightly coupled classes are hard to reuse in different contexts
+- **Increased Complexity**: As the system grows, dependencies create complex webs of interconnections
+
+### 4. How does loose coupling improve software design?
+
+**Answer:** Loose coupling improves software design by:
+- **Increasing Flexibility**: Easy to swap implementations without changing dependent code
+- **Improving Testability**: Classes can be unit tested with mocks and stubs
+- **Enhancing Maintainability**: Changes are localized and don't ripple through the system
+- **Boosting Reusability**: Components can be reused in different contexts
+- **Reducing Complexity**: Dependencies are managed through abstractions, making the system more modular
+
+### 5. Give an example of tight coupling and how to refactor it to loose coupling.
+
+**Answer:** A common example is the tight coupling shown in this project. In the tight coupling version:
+
+```java
+public class Traveller {
+    Bike bike = new Bike();  // Direct instantiation - tight coupling
+
+    public void startJourney() {
+        this.bike.move();
+    }
+}
+```
+
+To refactor to loose coupling:
+1. Create an interface: `public interface Vehicle { void move(); }`
+2. Make concrete classes implement the interface: `public class Bike implements Vehicle { ... }`
+3. Use dependency injection: `public Traveller(Vehicle vehicle) { this.vehicle = vehicle; }`
+
+This allows `Traveller` to work with any vehicle without knowing the specific implementation.
+
+### 6. What design patterns help achieve loose coupling?
+
+**Answer:** Several design patterns promote loose coupling:
+- **Dependency Injection**: Injects dependencies from outside rather than creating them internally
+- **Factory Pattern**: Creates objects without specifying exact classes
+- **Observer Pattern**: Allows objects to communicate without tight coupling
+- **Strategy Pattern**: Encapsulates algorithms in separate classes that can be swapped
+- **Adapter Pattern**: Allows incompatible interfaces to work together
+
+### 7. How does dependency injection relate to loose coupling?
+
+**Answer:** Dependency injection is a technique that directly supports loose coupling. Instead of a class creating its own dependencies (tight coupling), dependencies are "injected" from outside, typically through constructor parameters or setter methods. This allows:
+- Dependencies to be swapped easily (e.g., for testing or different environments)
+- Classes to depend on abstractions rather than concretions
+- Better separation of concerns and modularity
+
+### 8. Why is loose coupling important for testing?
+
+**Answer:** Loose coupling is crucial for testing because:
+- **Isolation**: Classes can be tested independently without involving their dependencies
+- **Mocking**: Dependencies can be replaced with mock objects to simulate different scenarios
+- **Faster Tests**: Tests don't require setting up complex dependency chains
+- **Reliability**: Tests are less brittle and don't fail due to unrelated changes
+- **Coverage**: Easier to achieve high test coverage for individual components
+
+### 9. How does loose coupling affect code maintainability?
+
+**Answer:** Loose coupling significantly improves maintainability by:
+- **Localizing Changes**: Modifications to one module don't require changes in dependent modules
+- **Reducing Ripple Effects**: Bugs or changes in one part don't cascade to others
+- **Easier Refactoring**: Code can be restructured with less risk
+- **Better Debugging**: Issues can be isolated to specific modules
+- **Incremental Development**: New features can be added without affecting existing code
+
+### 10. Can you explain the Dependency Inversion Principle in relation to coupling?
+
+**Answer:** The Dependency Inversion Principle (DIP) is one of the SOLID principles that directly addresses coupling. It states:
+- High-level modules should not depend on low-level modules. Both should depend on abstractions.
+- Abstractions should not depend on details. Details should depend on abstractions.
+
+In terms of coupling, DIP promotes loose coupling by ensuring that classes depend on interfaces or abstract classes rather than concrete implementations. This principle is fundamental to achieving loose coupling and is exemplified in the loose coupling example where `Traveller` depends on the `Vehicle` interface, not on specific vehicle classes.
+
+### 11. How can you measure coupling in code?
+
+**Answer:** Coupling can be measured using various metrics:
+- **Afferent Coupling (Ca)**: Number of classes that depend on a given class
+- **Efferent Coupling (Ce)**: Number of classes that a given class depends on
+- **Instability (I)**: Ce / (Ce + Ca) - measures how likely a class is to change
+- **Abstractness (A)**: Ratio of abstract classes/interfaces to total classes
+- **Distance from Main Sequence (D)**: |A + I - 1| - indicates design quality
+
+### 12. What are some real-world examples of tight coupling that should be avoided?
+
+**Answer:** Common real-world examples include:
+- **Direct Database Access**: Classes directly instantiating database connections
+- **Hardcoded Dependencies**: Classes with new() calls to concrete classes
+- **Static Method Calls**: Using static methods that create tight dependencies
+- **Global State**: Classes depending on global variables or singletons
+- **Inheritance Abuse**: Deep inheritance hierarchies that create tight coupling
+
+### 13. How does loose coupling relate to microservices architecture?
+
+**Answer:** Loose coupling is fundamental to microservices:
+- **Service Independence**: Services communicate through well-defined APIs (interfaces)
+- **Technology Agnostic**: Services can be implemented in different technologies
+- **Independent Deployment**: Changes to one service don't require redeploying others
+- **Fault Isolation**: Failures in one service don't cascade to others
+- **Scalability**: Services can be scaled independently
+
+### 14. What are the trade-offs of loose coupling?
+
+**Answer:** While loose coupling has many benefits, there are trade-offs:
+- **Increased Complexity**: More interfaces and abstractions can make code harder to understand initially
+- **Performance Overhead**: Indirection through interfaces may have slight performance costs
+- **Development Time**: Designing abstractions takes more upfront time
+- **Learning Curve**: Developers need to understand dependency injection and related patterns
+- **Over-engineering Risk**: Not all code needs loose coupling; sometimes tight coupling is acceptable for simple cases
+
+### 15. How can you refactor existing tightly coupled code to loose coupling?
+
+**Answer:** Steps to refactor tightly coupled code:
+1. **Identify Dependencies**: Find direct instantiations and concrete references
+2. **Create Abstractions**: Extract interfaces or abstract classes
+3. **Implement Interfaces**: Make concrete classes implement the abstractions
+4. **Introduce Dependency Injection**: Change constructors to accept dependencies
+5. **Update Client Code**: Modify code that creates objects to use dependency injection
+6. **Test Incrementally**: Ensure each change doesn't break functionality
+7. **Remove Old Code**: Gradually remove direct instantiations
+
+
 ## Inversion of Control (IoC)
 
 ### What is IoC?
@@ -658,164 +821,3 @@ ApplicationContext is preferred for most applications.
 - Refactor the code to avoid circular dependencies
 - Use @Lazy annotation to break the cycle
 
-## How to Run
-
-1. Compile the Java files:
-   ```
-   javac -d . src/main/java/com/mahesh/tightCoupling/*.java
-   javac -d . src/main/java/com/mahesh/looseCoupling/*.java
-   ```
-
-2. Run the tight coupling example:
-   ```
-   java com.mahesh.tightCoupling.Client
-   ```
-
-3. Run the loose coupling example:
-   ```
-   java com.mahesh.looseCoupling.Client
-   ```
-
-Note: The loose coupling `Client.java` has a `main()` method without proper signature. To run it, you may need to add `public static void main(String[] args)` or call it from another class.
-
-## Interview Questions on Coupling
-
-Here are some common interview questions related to coupling in software design, along with detailed answers:
-
-### 1. What is coupling in software design?
-
-**Answer:** Coupling refers to the degree of interdependence between software modules or classes. It measures how closely connected different parts of a system are. High coupling means modules are tightly connected and changes in one module can significantly affect others. Low coupling means modules are relatively independent, making the system more maintainable and flexible.
-
-### 2. Explain the difference between tight coupling and loose coupling.
-
-**Answer:** Tight coupling occurs when classes are highly dependent on each other, often through direct instantiation or concrete references. For example, if Class A directly creates an instance of Class B, they are tightly coupled.
-
-Loose coupling is achieved when classes depend on abstractions (like interfaces) rather than concrete implementations. This allows for greater flexibility and easier changes. In the examples above, the tight coupling version has `Traveller` directly instantiating `Bike`, while the loose coupling version uses a `Vehicle` interface and dependency injection.
-
-### 3. What are the disadvantages of tight coupling?
-
-**Answer:** Tight coupling has several disadvantages:
-- **Rigidity**: Hard to modify or extend code without affecting other parts
-- **Difficulty in Testing**: Classes can't be tested in isolation
-- **Poor Maintainability**: Changes in one class can break dependent classes
-- **Limited Reusability**: Tightly coupled classes are hard to reuse in different contexts
-- **Increased Complexity**: As the system grows, dependencies create complex webs of interconnections
-
-### 4. How does loose coupling improve software design?
-
-**Answer:** Loose coupling improves software design by:
-- **Increasing Flexibility**: Easy to swap implementations without changing dependent code
-- **Improving Testability**: Classes can be unit tested with mocks and stubs
-- **Enhancing Maintainability**: Changes are localized and don't ripple through the system
-- **Boosting Reusability**: Components can be reused in different contexts
-- **Reducing Complexity**: Dependencies are managed through abstractions, making the system more modular
-
-### 5. Give an example of tight coupling and how to refactor it to loose coupling.
-
-**Answer:** A common example is the tight coupling shown in this project. In the tight coupling version:
-
-```java
-public class Traveller {
-    Bike bike = new Bike();  // Direct instantiation - tight coupling
-
-    public void startJourney() {
-        this.bike.move();
-    }
-}
-```
-
-To refactor to loose coupling:
-1. Create an interface: `public interface Vehicle { void move(); }`
-2. Make concrete classes implement the interface: `public class Bike implements Vehicle { ... }`
-3. Use dependency injection: `public Traveller(Vehicle vehicle) { this.vehicle = vehicle; }`
-
-This allows `Traveller` to work with any vehicle without knowing the specific implementation.
-
-### 6. What design patterns help achieve loose coupling?
-
-**Answer:** Several design patterns promote loose coupling:
-- **Dependency Injection**: Injects dependencies from outside rather than creating them internally
-- **Factory Pattern**: Creates objects without specifying exact classes
-- **Observer Pattern**: Allows objects to communicate without tight coupling
-- **Strategy Pattern**: Encapsulates algorithms in separate classes that can be swapped
-- **Adapter Pattern**: Allows incompatible interfaces to work together
-
-### 7. How does dependency injection relate to loose coupling?
-
-**Answer:** Dependency injection is a technique that directly supports loose coupling. Instead of a class creating its own dependencies (tight coupling), dependencies are "injected" from outside, typically through constructor parameters or setter methods. This allows:
-- Dependencies to be swapped easily (e.g., for testing or different environments)
-- Classes to depend on abstractions rather than concretions
-- Better separation of concerns and modularity
-
-### 8. Why is loose coupling important for testing?
-
-**Answer:** Loose coupling is crucial for testing because:
-- **Isolation**: Classes can be tested independently without involving their dependencies
-- **Mocking**: Dependencies can be replaced with mock objects to simulate different scenarios
-- **Faster Tests**: Tests don't require setting up complex dependency chains
-- **Reliability**: Tests are less brittle and don't fail due to unrelated changes
-- **Coverage**: Easier to achieve high test coverage for individual components
-
-### 9. How does loose coupling affect code maintainability?
-
-**Answer:** Loose coupling significantly improves maintainability by:
-- **Localizing Changes**: Modifications to one module don't require changes in dependent modules
-- **Reducing Ripple Effects**: Bugs or changes in one part don't cascade to others
-- **Easier Refactoring**: Code can be restructured with less risk
-- **Better Debugging**: Issues can be isolated to specific modules
-- **Incremental Development**: New features can be added without affecting existing code
-
-### 10. Can you explain the Dependency Inversion Principle in relation to coupling?
-
-**Answer:** The Dependency Inversion Principle (DIP) is one of the SOLID principles that directly addresses coupling. It states:
-- High-level modules should not depend on low-level modules. Both should depend on abstractions.
-- Abstractions should not depend on details. Details should depend on abstractions.
-
-In terms of coupling, DIP promotes loose coupling by ensuring that classes depend on interfaces or abstract classes rather than concrete implementations. This principle is fundamental to achieving loose coupling and is exemplified in the loose coupling example where `Traveller` depends on the `Vehicle` interface, not on specific vehicle classes.
-
-### 11. How can you measure coupling in code?
-
-**Answer:** Coupling can be measured using various metrics:
-- **Afferent Coupling (Ca)**: Number of classes that depend on a given class
-- **Efferent Coupling (Ce)**: Number of classes that a given class depends on
-- **Instability (I)**: Ce / (Ce + Ca) - measures how likely a class is to change
-- **Abstractness (A)**: Ratio of abstract classes/interfaces to total classes
-- **Distance from Main Sequence (D)**: |A + I - 1| - indicates design quality
-
-### 12. What are some real-world examples of tight coupling that should be avoided?
-
-**Answer:** Common real-world examples include:
-- **Direct Database Access**: Classes directly instantiating database connections
-- **Hardcoded Dependencies**: Classes with new() calls to concrete classes
-- **Static Method Calls**: Using static methods that create tight dependencies
-- **Global State**: Classes depending on global variables or singletons
-- **Inheritance Abuse**: Deep inheritance hierarchies that create tight coupling
-
-### 13. How does loose coupling relate to microservices architecture?
-
-**Answer:** Loose coupling is fundamental to microservices:
-- **Service Independence**: Services communicate through well-defined APIs (interfaces)
-- **Technology Agnostic**: Services can be implemented in different technologies
-- **Independent Deployment**: Changes to one service don't require redeploying others
-- **Fault Isolation**: Failures in one service don't cascade to others
-- **Scalability**: Services can be scaled independently
-
-### 14. What are the trade-offs of loose coupling?
-
-**Answer:** While loose coupling has many benefits, there are trade-offs:
-- **Increased Complexity**: More interfaces and abstractions can make code harder to understand initially
-- **Performance Overhead**: Indirection through interfaces may have slight performance costs
-- **Development Time**: Designing abstractions takes more upfront time
-- **Learning Curve**: Developers need to understand dependency injection and related patterns
-- **Over-engineering Risk**: Not all code needs loose coupling; sometimes tight coupling is acceptable for simple cases
-
-### 15. How can you refactor existing tightly coupled code to loose coupling?
-
-**Answer:** Steps to refactor tightly coupled code:
-1. **Identify Dependencies**: Find direct instantiations and concrete references
-2. **Create Abstractions**: Extract interfaces or abstract classes
-3. **Implement Interfaces**: Make concrete classes implement the abstractions
-4. **Introduce Dependency Injection**: Change constructors to accept dependencies
-5. **Update Client Code**: Modify code that creates objects to use dependency injection
-6. **Test Incrementally**: Ensure each change doesn't break functionality
-7. **Remove Old Code**: Gradually remove direct instantiations
