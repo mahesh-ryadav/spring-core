@@ -16,6 +16,7 @@ This project demonstrates the concepts of tight coupling and loose coupling in J
   - [Annotation-based Configuration](#annotation-based-configuration)
   - [Java-based Configuration](#java-based-configuration)
   - [Interview Questions on IoC and Configuration](#interview-questions-on-ioc-and-configuration)
+- [Stereotype Annotations](#stereotype-annotations)
 
 ## Tight Coupling
 
@@ -820,4 +821,167 @@ ApplicationContext is preferred for most applications.
 - Use setter injection instead of constructor injection
 - Refactor the code to avoid circular dependencies
 - Use @Lazy annotation to break the cycle
+
+## Stereotype Annotations
+
+Stereotype annotations in Spring are a set of annotations that mark classes as candidates for auto-detection by Spring's component scanning mechanism. They are used to define beans in the Spring IoC container without explicitly configuring them in XML or Java configuration classes. The main stereotype annotations are `@Component`, `@Service`, `@Repository`, and `@Controller`.
+
+### Purpose of Stereotype Annotations
+
+Stereotype annotations simplify the configuration of Spring beans by allowing the framework to automatically detect and register beans based on classpath scanning. This reduces the need for manual bean definitions and promotes cleaner, more maintainable code. They also provide semantic meaning to the beans, indicating their role in the application architecture.
+
+### Key Stereotype Annotations
+
+- **@Component**: A generic stereotype annotation for any Spring-managed component. It marks a class as a bean candidate for auto-detection.
+- **@Service**: Indicates that the class holds business logic. It's a specialization of `@Component` for service layer classes.
+- **@Repository**: Used for DAO (Data Access Object) classes that handle data access logic. It also enables Spring's exception translation for persistence exceptions.
+- **@Controller**: Marks a class as a web controller in Spring MVC applications. It's a specialization of `@Component` for presentation layer classes.
+
+### How Component Scanning Works
+
+Component scanning is enabled using the `@ComponentScan` annotation in a configuration class. This annotation tells Spring to scan specified packages for classes annotated with stereotype annotations and register them as beans.
+
+### Code Example
+
+**AppConfig.java**
+```java
+package com.mahesh.steriotypeannotations;
+
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+@ComponentScan(basePackages = "com.mahesh.steriotypeannotations")
+public class AppConfig {
+    
+}
+```
+
+**DemoController.java**
+```java
+package com.mahesh.steriotypeannotations.controller;
+
+import org.springframework.stereotype.Controller;
+
+@Controller
+public class DemoController {
+
+    public String hello(){
+        return "Hello Controller";
+    }
+}
+```
+
+**DemoRepository.java**
+```java
+package com.mahesh.steriotypeannotations.repository;
+
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class DemoRepository {
+
+    public String hello(){
+        return "Hello Repository";
+    }
+}
+```
+
+**DemoService.java**
+```java
+package com.mahesh.steriotypeannotations.service;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class DemoService {
+
+    public String hello(){
+        return "Hello Service";
+    }
+}
+```
+
+**DemoClient.java**
+```java
+package com.mahesh.steriotypeannotations;
+
+import com.mahesh.steriotypeannotations.controller.DemoController;
+import com.mahesh.steriotypeannotations.repository.DemoRepository;
+import com.mahesh.steriotypeannotations.service.DemoService;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+public class DemoClient {
+
+    public static void main(String[] args) {
+        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(AppConfig.class);
+
+        DemoController demoController = applicationContext.getBean(DemoController.class);
+        System.out.println(demoController.hello());
+        DemoRepository demoRepository = applicationContext.getBean(DemoRepository.class);
+        System.out.println(demoRepository.hello());
+        DemoService demoService = applicationContext.getBean(DemoService.class);
+        System.out.println(demoService.hello());
+    }
+}
+```
+
+### Explanation
+
+In this example:
+- `AppConfig.java` uses `@ComponentScan` to scan the `com.mahesh.steriotypeannotations` package for annotated classes.
+- `DemoController`, `DemoRepository`, and `DemoService` are annotated with their respective stereotype annotations.
+- Spring automatically creates beans for these classes and manages their lifecycle.
+- `DemoClient` retrieves these beans from the application context and calls their methods.
+
+### Interview Questions on Stereotype Annotations
+
+#### 1. What are stereotype annotations in Spring?
+
+**Answer:** Stereotype annotations are a set of annotations (`@Component`, `@Service`, `@Repository`, `@Controller`) that mark classes as candidates for auto-detection by Spring's component scanning. They simplify bean configuration by allowing automatic registration of beans without explicit XML or Java configuration.
+
+#### 2. What is the difference between @Component, @Service, @Repository, and @Controller?
+
+**Answer:**
+- `@Component`: Generic annotation for any Spring-managed component.
+- `@Service`: Specialization of `@Component` for service layer classes, indicating business logic.
+- `@Repository`: Used for DAO classes, enables exception translation for persistence exceptions.
+- `@Controller`: Specialization of `@Component` for web controllers in Spring MVC.
+
+#### 3. How does @ComponentScan work?
+
+**Answer:** `@ComponentScan` enables component scanning in specified packages. Spring scans these packages for classes annotated with stereotype annotations and automatically registers them as beans in the IoC container.
+
+#### 4. What are the benefits of using stereotype annotations?
+
+**Answer:**
+- Reduces boilerplate code by eliminating manual bean definitions.
+- Provides semantic meaning to classes based on their roles.
+- Enables automatic bean discovery and registration.
+- Improves code maintainability and readability.
+
+#### 5. Can you use multiple stereotype annotations on the same class?
+
+**Answer:** Technically yes, but it's not recommended as it can be confusing. Each stereotype annotation serves a specific purpose, and using multiple can lead to ambiguity about the class's role.
+
+#### 6. What happens if you don't use @ComponentScan?
+
+**Answer:** Without `@ComponentScan`, Spring won't automatically detect and register beans annotated with stereotype annotations. You'd need to manually define these beans in XML or Java configuration classes.
+
+#### 7. How do stereotype annotations relate to the @Bean annotation?
+
+**Answer:** Stereotype annotations enable automatic bean discovery, while `@Bean` is used for explicit bean definition in Java configuration classes. Stereotype annotations are for convention-over-configuration, while `@Bean` provides more control over bean creation.
+
+#### 8. What is the default bean name when using stereotype annotations?
+
+**Answer:** The default bean name is the class name with the first letter in lowercase (e.g., `demoController` for `DemoController` class). You can override this using the `value` attribute of the annotation.
+
+#### 9. Can stereotype annotations be used with XML configuration?
+
+**Answer:** Yes, stereotype annotations work with XML configuration as long as `<context:component-scan>` is used in the XML file to enable component scanning.
+
+#### 10. What is the role of @Repository in exception translation?
+
+**Answer:** `@Repository` enables Spring's exception translation mechanism, which converts technology-specific exceptions (like JDBC's SQLException) into Spring's DataAccessException hierarchy, making exception handling more consistent across different persistence technologies.
 
